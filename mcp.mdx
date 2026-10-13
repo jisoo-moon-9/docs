@@ -1,0 +1,87 @@
+---
+title: 'MCP Server'
+description: 'Connect Claude and other AI tools to Lilys through the Model Context Protocol'
+icon: 'plug'
+---
+
+Lilys runs a remote [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server. Once it's connected, an AI assistant such as Claude can use Lilys directly from a conversation.
+
+| | |
+| --- | --- |
+| **Server URL** | `https://mcp.lilys.ai/mcp` |
+| **Transport** | Streamable HTTP |
+
+## Connect a client
+
+<Tabs>
+  <Tab title="Claude Code">
+    Add the server with the Claude Code CLI:
+
+    ```bash
+    claude mcp add --transport http lilys https://mcp.lilys.ai/mcp
+    ```
+
+    This command registers the server under the name `lilys` for the current project. To make it available in every project, add `--scope user`:
+
+    ```bash
+    claude mcp add --transport http --scope user lilys https://mcp.lilys.ai/mcp
+    ```
+
+    Start Claude Code and run `/mcp` to check that `lilys` is connected. If the server asks you to sign in, choose `lilys` in the `/mcp` menu and finish the sign-in in your browser.
+  </Tab>
+  <Tab title="Claude.ai / Claude Desktop">
+    1. Open **Settings → Connectors**.
+    2. Click **Add custom connector**.
+    3. Enter `Lilys` as the name and `https://mcp.lilys.ai/mcp` as the URL.
+    4. Click **Add**, then **Connect** if you're asked to sign in.
+
+    <Note>
+      Custom connectors are available on plans that support remote MCP servers. On Team and Enterprise plans, an owner may need to add the connector for the organization first.
+    </Note>
+  </Tab>
+  <Tab title="Other clients">
+    Most MCP clients that support remote HTTP servers (for example Cursor or VS Code) accept a JSON configuration like this:
+
+    ```json
+    {
+      "mcpServers": {
+        "lilys": {
+          "type": "http",
+          "url": "https://mcp.lilys.ai/mcp"
+        }
+      }
+    }
+    ```
+
+    Where this goes, and the exact key names, depend on the client. Check your client's MCP documentation.
+  </Tab>
+</Tabs>
+
+## Verify the connection
+
+In Claude Code, list your configured servers:
+
+```bash
+claude mcp list
+```
+
+`lilys` should appear with a connected status. In any client, you can also ask the assistant which Lilys tools it has available.
+
+## Remove the server
+
+```bash
+claude mcp remove lilys
+```
+
+In Claude.ai or Claude Desktop, remove the connector from **Settings → Connectors**.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="The server shows as failed or disconnected">
+    Check that the URL is exactly `https://mcp.lilys.ai/mcp`, including the `/mcp` path, and that `--transport http` was used. A corporate proxy or firewall that blocks `mcp.lilys.ai` will also prevent the connection.
+  </Accordion>
+  <Accordion title="The server needs authentication">
+    In Claude Code, run `/mcp`, select `lilys`, and follow the sign-in flow. In Claude.ai, click **Connect** next to the connector.
+  </Accordion>
+</AccordionGroup>
